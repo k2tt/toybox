@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja" class="noJS">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="Description" content="">
+<meta name="Keywords" content=",">
+
+<link rel="stylesheet" type="text/css" href="css/base.css" media="all">
+<title>計算機</title>
+
+</head>
+
+<body>
+
+<!-- container -->
+<div id="container">
+
+	<section id="app-calc">
+		<div id="panel-display">
+			<span id="main-view"></span>
+			<span id="sub-view"></span>
+		</div>
+		<div id="panel-button">
+			<table>
+				<colgroup>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+				</colgroup>
+				<tbody>
+					<tr>
+						<td><button>BS</button></td>
+						<td><button>CE</button></td>
+						<td><button id="ac">AC</button></td>
+						<td><button>±</button></td>
+						<td><button>√</button></td>
+					</tr>
+					<tr>
+						<td><button class="num" value="7">7</button></td>
+						<td><button class="num" value="8">8</button></td>
+						<td><button class="num" value="9">9</button></td>
+						<td><button class="oper">/</button></td>
+						<td><button class="oper">%</button></td>
+					</tr>
+					<tr>
+						<td><button class="num" value="4">4</button></td>
+						<td><button class="num" value="5">5</button></td>
+						<td><button class="num" value="6">6</button></td>
+						<td><button class="oper">*</button></td>
+						<td><button>1/x</button></td>
+					</tr>
+					<tr>
+						<td><button class="num" value="1">1</button></td>
+						<td><button class="num" value="2">2</button></td>
+						<td><button class="num" value="3">3</button></td>
+						<td><button class="oper">-</button></td>
+						<td rowspan="2"><button id="equal">=</button></td>
+					</tr>
+					<tr>
+						<td colspan="2"><button class="num" value="0">0</button></td>
+						<td><button class="num" value=".">.</button></td>
+						<td><button class="oper">+</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+</div>
+<!-- /container -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="js/calc-a.js"></script>
+
+</body>
+
+</html>
