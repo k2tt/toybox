@@ -74,7 +74,7 @@ OD.Calc = (function(){
     input += $(elm.target).val();
     input = input.replace(/^0([0-9])/,"$1"); //0の後に数字が続く場合は、先頭の0を消す
     phase = 1; //フェーズを1に
-    this.showResult(input);
+    this.renderResult(input);
   };
 
   /**
@@ -83,15 +83,16 @@ OD.Calc = (function(){
    */
   Calc.operator = function(e) {
     console.log("operator｜input="+input+"｜current="+current+"｜phase="+phase);
-    var op = $(e.target).text();
+
+    var operatorStr = $(e.target).text();
     current = current || input;
 
     if(phase === 1) {
-      this.calc().showResult(current);
+      this.calc().renderResult(current);
       input = "";
     }
 
-    switch(op) {
+    switch(operatorStr) {
       case '+':
         this.calc = function(){
           current = parseFloat(current) + parseFloat(input);
@@ -118,27 +119,54 @@ OD.Calc = (function(){
         break;
     }
 
+    this.renderSubView(operatorStr);
+
     phase = 0;
   };
 
+  /**
+   * イコール
+   * return {object} this
+   */
   Calc.equal = function() {
     if(phase === 1) {
       console.log("equal｜input="+input+"｜current="+current+"｜phase="+phase);
-      this.calc().showResult(current);
+      current = current || input;
+      this.calc().renderSubView().renderResult(current);
       input = "";
       phase = 0;
     }
     return this;
   };
 
+  /**
+   * 表示を初期化する
+   */
   Calc.allClear = function() {
     input = "";
     current = "";
-    this.calc = null;
-    this.showResult(current);
+    this.calc = function() {
+      return this;
+    };
+    this.renderSubView().renderResult(current);
   };
 
-  Calc.showResult = function(result) {
+  /**
+   * サブビューを更新する
+   */
+  Calc.renderSubView = function(operatorStr) {
+    var subText = operatorStr || "";
+    $elm.subView.text(subText);
+    return this;
+  };
+
+  /**
+   * 結果を更新する
+   * @param {String|Number}
+   */
+  Calc.renderResult = function(result) {
+    // console.log(typeof result); //TODO 渡ってくる値の方が2パターンある
+    // console.log(result);
     $elm.mainView.text(result);
   };
 
