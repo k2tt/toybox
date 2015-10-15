@@ -6,12 +6,12 @@
  */
 var OD = OD || {};
 OD.Calc = (function(){
-  "use strict";
+  'use strict';
 
   var Calc = {};
 
   var input = '';
-  var current = '';
+  var current = '0';
   var memory = [];
   var phase = 0;
   var $elm = null;
@@ -72,7 +72,7 @@ OD.Calc = (function(){
    */
   Calc.inputNum = function(elm) {
     input += $(elm.target).val();
-    input = input.replace(/^0([0-9])/,"$1"); //0の後に数字が続く場合は、先頭の0を消す
+    input = input.replace(/^0([0-9])/,'$1'); //0の後に数字が続く場合は、先頭の0を消す
     phase = 1; //フェーズを1に
     this.renderResult(input);
   };
@@ -82,14 +82,14 @@ OD.Calc = (function(){
    * @param {element}
    */
   Calc.operator = function(e) {
-    console.log("operator｜input="+input+"｜current="+current+"｜phase="+phase);
+    console.log('operator｜input='+input+'｜current='+current+'｜phase='+phase);
 
     var operatorStr = $(e.target).text();
     current = current || input;
 
     if(phase === 1) {
       this.calc().renderResult(current);
-      input = "";
+      input = '';
     }
 
     switch(operatorStr) {
@@ -130,10 +130,10 @@ OD.Calc = (function(){
    */
   Calc.equal = function() {
     if(phase === 1) {
-      console.log("equal｜input="+input+"｜current="+current+"｜phase="+phase);
+      console.log('equal｜input='+input+'｜current='+current+'｜phase='+phase);
       current = current || input;
       this.calc().renderSubView().renderResult(current);
-      input = "";
+      input = '';
       phase = 0;
     }
     return this;
@@ -143,8 +143,8 @@ OD.Calc = (function(){
    * 表示を初期化する
    */
   Calc.allClear = function() {
-    input = "";
-    current = "";
+    input = '';
+    current = '0';
     this.calc = function() {
       return this;
     };
@@ -155,7 +155,7 @@ OD.Calc = (function(){
    * サブビューを更新する
    */
   Calc.renderSubView = function(operatorStr) {
-    var subText = operatorStr || "";
+    var subText = operatorStr || '';
     $elm.subView.text(subText);
     return this;
   };
