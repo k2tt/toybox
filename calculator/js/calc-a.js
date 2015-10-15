@@ -85,8 +85,10 @@ OD.Calc = (function(){
     console.log('operator｜input='+input+'｜current='+current+'｜phase='+phase);
 
     var operatorStr = $(e.target).text();
+    //TODOこのあたりバグってるっぽい
+    //current が空の時は0にしないとダメかも
     current = current || input;
-
+    console.log(input + '|' + current);
     if(phase === 1) {
       this.calc().renderResult(current);
       input = '';
