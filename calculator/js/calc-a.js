@@ -10,10 +10,22 @@ OD.Calc = (function(){
 
   var Calc = {};
 
-  var input = '';
-  var current = '0';
+  /**
+   * @type string|number
+   * input - 入力中の数字
+   * current - 現在の計算結果
+   * phase:0 - 数字入力
+   * phase:1 - 演算子/イコール入力で計算する
+   * phase:2 - イコール後 次の入力が数字ならAC
+   */
+  var state = {
+    input : '',
+    current : '',
+    phase : 0
+    // memory : [],
+  };
+
   var memory = [];
-  var phase = 0;
   var $elm = null;
 
   /**
@@ -67,14 +79,20 @@ OD.Calc = (function(){
   /**
    * 数字入力
    * @param {element}
-   * phase:0 数字入力
-   * phase:1 演算子/イコール入力で計算する
    */
   Calc.inputNum = function(elm) {
-    input += $(elm.target).val();
-    input = input.replace(/^0([0-9])/,'$1'); //0の後に数字が続く場合は、先頭の0を消す
-    phase = 1; //フェーズを1に
-    this.renderResult(input);
+    var num = state.input;
+
+    if(state.phase === 2) {
+      this.allClear();
+    }
+
+    num += $(elm.target).val();
+
+    //0の後に数字が続く場合は、先頭の0を消す
+    state.input = num.replace(/^0([0-9])/,'$1');
+    state.phase = 1;
+    this.renderResult(state.input);
   };
 
   /**
@@ -82,40 +100,44 @@ OD.Calc = (function(){
    * @param {element}
    */
   Calc.operator = function(e) {
-    console.log('operator｜input='+input+'｜current='+current+'｜phase='+phase);
+    // console.log('operator｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
 
     var operatorStr = $(e.target).text();
-    //TODOこのあたりバグってるっぽい
-    //current が空の時は0にしないとダメかも
-    current = current || input;
-    console.log(input + '|' + current);
-    if(phase === 1) {
-      this.calc().renderResult(current);
-      input = '';
+
+    state.input = state.input || '0'; 
+    state.current = (state.current === '') ? state.input : state.current;
+
+    if(state.phase === 1) {
+      this.calc().renderResult(state.current);
+      state.input = '';
     }
 
     switch(operatorStr) {
       case '+':
         this.calc = function(){
-          current = parseFloat(current) + parseFloat(input);
+          var currentNum = parseFloat(state.current) + parseFloat(state.input);
+          state.current = currentNum + '';
           return this;
         };
         break;
       case '-':
         this.calc = function(){
-          current = parseFloat(current) - parseFloat(input);
+          var currentNum = parseFloat(state.current) - parseFloat(state.input);
+          state.current = currentNum + '';
           return this;
         };
         break;
       case '*':
         this.calc = function(){
-          current = parseFloat(current) * parseFloat(input);
+          var currentNum = parseFloat(state.current) * parseFloat(state.input);
+          state.current = currentNum + '';
           return this;
         };
         break;
       case '/':
         this.calc = function(){
-          current = parseFloat(current) / parseFloat(input);
+          var currentNum = parseFloat(state.current) / parseFloat(state.input);
+          state.current = currentNum + '';
           return this;
         };
         break;
@@ -123,7 +145,7 @@ OD.Calc = (function(){
 
     this.renderSubView(operatorStr);
 
-    phase = 0;
+    state.phase = 0;
   };
 
   /**
@@ -131,12 +153,12 @@ OD.Calc = (function(){
    * return {object} this
    */
   Calc.equal = function() {
-    if(phase === 1) {
-      console.log('equal｜input='+input+'｜current='+current+'｜phase='+phase);
-      current = current || input;
-      this.calc().renderSubView().renderResult(current);
-      input = '';
-      phase = 0;
+    if(state.phase === 1) {
+      console.log('equal｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
+      state.current = (state.current === '') ? state.input : state.current;
+      this.calc().renderSubView().renderResult(state.current);
+      state.input = '';
+      state.phase = 2;
     }
     return this;
   };
@@ -145,19 +167,19 @@ OD.Calc = (function(){
    * 表示を初期化する
    */
   Calc.allClear = function() {
-    input = '';
-    current = '0';
     this.calc = function() {
       return this;
     };
-    this.renderSubView().renderResult(current);
+    state.current = '';
+    state.input = '';
+    this.renderSubView().renderResult('0');
   };
 
   /**
    * サブビューを更新する
    */
-  Calc.renderSubView = function(operatorStr) {
-    var subText = operatorStr || '';
+  Calc.renderSubView = function(opt_operatorStr) {
+    var subText = opt_operatorStr || '';
     $elm.subView.text(subText);
     return this;
   };
@@ -167,13 +189,22 @@ OD.Calc = (function(){
    * @param {String|Number}
    */
   Calc.renderResult = function(result) {
-    // console.log(typeof result); //TODO 渡ってくる値の方が2パターンある
-    // console.log(result);
+    // console.log(typeof result);
     $elm.mainView.text(result);
+    console.log('renderResult｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
+    return this;
   };
 
   return Calc;
 　
+  //TODO
+  // ・CE対応
+  // ・BS対応
+  // ・小数点対応
+  // ・履歴対応
+  // ・キー入力対応
+  // ・モデルとビューコントロールに分離する？
+
 })();
 
 OD.Calc.init();
