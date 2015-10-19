@@ -45,6 +45,7 @@ OD.Calc = (function(){
       ac : $('#ac'),
       equal : $('#equal'),
       num : $('.num'),
+      point : $('.point'),
       operator : $('.operator')
     };
 
@@ -53,6 +54,10 @@ OD.Calc = (function(){
      */
     $elm.num.on('click', function(elm) {
       _this.inputNum(elm);
+    });
+
+    $elm.point.on('click', function(elm) {
+      _this.inputPoint(elm);
     });
 
     $elm.ac.on('click', function() {
