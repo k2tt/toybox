@@ -56,8 +56,8 @@ OD.Calc = (function(){
       _this.inputNum(elm);
     });
 
-    $elm.point.on('click', function(elm) {
-      _this.inputPoint(elm);
+    $elm.point.on('click', function() {
+      _this.inputPoint();
     });
 
     $elm.ac.on('click', function() {
@@ -96,6 +96,25 @@ OD.Calc = (function(){
 
     //0の後に数字が続く場合は、先頭の0を消す
     state.input = num.replace(/^0([0-9])/,'$1');
+    state.phase = 1;
+    this.renderResult(state.input);
+  };
+
+  /**
+   * 小数点入力
+   * @param {element}
+   */
+  Calc.inputPoint = function() {
+    var num = state.input;
+
+    if(state.phase === 2) {
+      this.allClear();
+    }
+
+    num = num || '0';
+    num += '.';
+    state.input = num;
+
     state.phase = 1;
     this.renderResult(state.input);
   };
@@ -205,7 +224,6 @@ OD.Calc = (function(){
   //TODO
   // ・CE対応
   // ・BS対応
-  // ・小数点対応
   // ・履歴対応
   // ・キー入力対応
   // ・モデルとビューコントロールに分離する？
