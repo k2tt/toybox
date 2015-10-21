@@ -72,9 +72,10 @@ OD.Calc = (function(){
       _this.equal();
     });
 
-    Mousetrap.bind({
-      '0': function() { _this.inputNum('0'); },
-      '1': function() { _this.inputNum('1'); }
+    Mousetrap.bind(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], function(e, key) {
+      _this.inputNum(key);
+    }).bind('.', function() {
+      _this.inputPoint();
     });
 
   };
@@ -88,15 +89,17 @@ OD.Calc = (function(){
 
   /**
    * 数字入力
-   * @param {element}
+   * @param {object|string}
    */
   Calc.inputNum = function(e) {
     var num = state.input;
 
+    //イコール直後なら一度ACを挟む
     if(state.phase === 2) {
       this.allClear();
     }
 
+    //クリックとキープレスで処理を分ける
     if(typeof e === 'object') {
       console.log('object');
       num += $(e.target).val();
@@ -119,8 +122,14 @@ OD.Calc = (function(){
   Calc.inputPoint = function() {
     var num = state.input;
 
+    //イコール直後なら一度ACを挟む
     if(state.phase === 2) {
       this.allClear();
+    }
+
+    //既に小数点が含まれていれば return
+    if(num.indexOf('.') >= 0) {
+      return this;
     }
 
     num = num || '0';
@@ -140,7 +149,13 @@ OD.Calc = (function(){
 
     var operatorStr = $(e.target).text();
 
-    state.input = state.input || '0'; 
+    state.input = state.input || '0';
+
+    //最後が小数点なら少数点を省く
+    if(state.input.slice(-1) === '.') {
+      state.input = state.input.slice(0, -1);
+    }
+
     state.current = (state.current === '') ? state.input : state.current;
 
     if(state.phase === 1) {
