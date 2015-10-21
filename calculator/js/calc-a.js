@@ -72,6 +72,11 @@ OD.Calc = (function(){
       _this.equal();
     });
 
+    Mousetrap.bind({
+      '0': function() { _this.inputNum('0'); },
+      '1': function() { _this.inputNum('1'); }
+    });
+
   };
 
   /**
@@ -85,14 +90,21 @@ OD.Calc = (function(){
    * 数字入力
    * @param {element}
    */
-  Calc.inputNum = function(elm) {
+  Calc.inputNum = function(e) {
     var num = state.input;
 
     if(state.phase === 2) {
       this.allClear();
     }
 
-    num += $(elm.target).val();
+    if(typeof e === 'object') {
+      console.log('object');
+      num += $(e.target).val();
+    }
+    else if(typeof e === 'string') {
+      console.log('string');
+      num += e;
+    }
 
     //0の後に数字が続く場合は、先頭の0を消す
     state.input = num.replace(/^0([0-9])/,'$1');
