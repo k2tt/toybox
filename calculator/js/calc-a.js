@@ -247,7 +247,7 @@ OD.Calc = (function(){
   };
 
   return Calc;
-　
+
   //TODO
   // ・CE対応
   // ・BS対応
