@@ -76,6 +76,12 @@ OD.Calc = (function(){
       _this.inputNum(key);
     }).bind('.', function() {
       _this.inputPoint();
+    }).bind(['+', '-', '*', '/'], function(e, key) {
+      _this.operator(key);
+    }).bind('=', function() {
+      _this.equal();
+    }).bind('c', function() {
+      _this.allClear();
     });
 
   };
@@ -101,11 +107,9 @@ OD.Calc = (function(){
 
     //クリックとキープレスで処理を分ける
     if(typeof e === 'object') {
-      console.log('object');
       num += $(e.target).val();
     }
     else if(typeof e === 'string') {
-      console.log('string');
       num += e;
     }
 
@@ -147,7 +151,17 @@ OD.Calc = (function(){
   Calc.operator = function(e) {
     // console.log('operator｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
 
-    var operatorStr = $(e.target).text();
+    var operatorStr;
+
+    //クリックとキープレスで処理を分ける
+    if(typeof e === 'object') {
+      console.log('object'+$(e.target).text());
+      operatorStr = $(e.target).text();
+    }
+    else if(typeof e === 'string') {
+      console.log('string'+ e);
+      operatorStr = e;
+    }
 
     state.input = state.input || '0';
 
@@ -252,8 +266,8 @@ OD.Calc = (function(){
   // ・CE対応
   // ・BS対応
   // ・履歴対応
-  // ・キー入力対応
   // ・モデルとビューコントロールに分離する？
+  // キータイプ時にボタンを押したような表現を加える
 
 })();
 
