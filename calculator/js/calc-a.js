@@ -43,6 +43,7 @@ OD.Calc = (function(){
       mainView : $('#main-view'),
       subView : $('#sub-view'),
       ac : $('#ac'),
+      bs : $('#bs'),
       equal : $('#equal'),
       num : $('.num'),
       point : $('.point'),
@@ -62,6 +63,10 @@ OD.Calc = (function(){
 
     $elm.ac.on('click', function() {
       _this.allClear();
+    });
+
+    $elm.bs.on('click', function() {
+      _this.backSpace();
     });
 
     $elm.operator.on('click', function(e) {
@@ -226,6 +231,14 @@ OD.Calc = (function(){
       state.phase = 2;
     }
     return this;
+  };
+
+  /**
+   * 一文字削除する
+   */
+  Calc.backSpace = function() {
+    state.input = state.input.slice(0, -1) || '0';
+    return this.renderResult(state.input);
   };
 
   /**
