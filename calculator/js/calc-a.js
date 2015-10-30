@@ -1,5 +1,3 @@
-//calc-a 入力するたびに計算パターン
-
 /**
  * 名前空間
  * OD.Calc
@@ -21,8 +19,9 @@ OD.Calc = (function(){
   var state = {
     input : '',
     current : '',
-    phase : 0
-    // memory : [],
+    phase : 0,
+    shortMemory : [],
+    longMemory : []
   };
 
   var memory = [];
@@ -237,7 +236,10 @@ OD.Calc = (function(){
    * 一文字削除する
    */
   Calc.backSpace = function() {
-    state.input = state.input.slice(0, -1) || '0';
+
+    //TODO 消しても renderResult で追加されるため機能していない
+    state.longMemory.pop();
+    state.input = state.longMemory[state.longMemory.length - 1] || '0';
     return this.renderResult(state.input);
   };
 
@@ -254,6 +256,23 @@ OD.Calc = (function(){
   };
 
   /**
+   * 履歴を追加
+   * @param {String}
+   */
+  Calc.addMemory = function(result) {
+
+    //立て続けの0は履歴に入れない
+    if (result === '0' && state.longMemory[state.longMemory.length - 1] === '0') {
+      return;
+    }
+
+    state.shortMemory.push(result);
+    state.longMemory.push(result);
+    $('#memory').text(state.longMemory); //test
+    return this;
+  };
+
+  /**
    * サブビューを更新する
    */
   Calc.renderSubView = function(opt_operatorStr) {
@@ -264,10 +283,11 @@ OD.Calc = (function(){
 
   /**
    * 結果を更新する
-   * @param {String|Number}
+   * @param {String}
    */
   Calc.renderResult = function(result) {
     // console.log(typeof result);
+    this.addMemory(result);
     $elm.mainView.text(result);
     console.log('renderResult｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
     return this;
