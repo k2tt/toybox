@@ -240,7 +240,7 @@ OD.Calc = (function(){
     //TODO 消しても renderResult で追加されるため機能していない
     state.longMemory.pop();
     state.input = state.longMemory[state.longMemory.length - 1] || '0';
-    return this.renderResult(state.input);
+    return this.renderResult(state.input, 'bs');
   };
 
   /**
