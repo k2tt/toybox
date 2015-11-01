@@ -20,11 +20,10 @@ OD.Calc = (function(){
     input : '',
     current : '',
     phase : 0,
-    shortMemory : [],
-    longMemory : []
+    shortMemory : ['0'],
+    longMemory : ['0']
   };
 
-  var memory = [];
   var $elm = null;
 
   /**
@@ -42,7 +41,7 @@ OD.Calc = (function(){
       mainView : $('#main-view'),
       subView : $('#sub-view'),
       ac : $('#ac'),
-      bs : $('#bs'),
+      ce : $('#ce'),
       equal : $('#equal'),
       num : $('.num'),
       point : $('.point'),
@@ -64,8 +63,8 @@ OD.Calc = (function(){
       _this.allClear();
     });
 
-    $elm.bs.on('click', function() {
-      _this.backSpace();
+    $elm.ce.on('click', function() {
+      _this.clearEntry();
     });
 
     $elm.operator.on('click', function(e) {
@@ -82,7 +81,8 @@ OD.Calc = (function(){
       _this.inputPoint();
     }).bind(['+', '-', '*', '/'], function(e, key) {
       _this.operator(key);
-    }).bind('=', function() {
+    }).bind(['=','return'], function(e) {
+      e.preventDefault();
       _this.equal();
     }).bind('c', function() {
       _this.allClear();
@@ -120,7 +120,7 @@ OD.Calc = (function(){
     //0の後に数字が続く場合は、先頭の0を消す
     state.input = num.replace(/^0([0-9])/,'$1');
     state.phase = 1;
-    this.renderResult(state.input);
+    this.addMemory(state.input).renderResult(state.input);
   };
 
   /**
@@ -145,7 +145,7 @@ OD.Calc = (function(){
     state.input = num;
 
     state.phase = 1;
-    this.renderResult(state.input);
+    this.addMemory(state.input).renderResult(state.input);
   };
 
   /**
@@ -155,15 +155,15 @@ OD.Calc = (function(){
   Calc.operator = function(e) {
     // console.log('operator｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
 
-    var operatorStr;
+    var operatorStr = '';
 
     //クリックとキープレスで処理を分ける
     if(typeof e === 'object') {
-      console.log('object'+$(e.target).text());
+      // console.log('object'+$(e.target).text());
       operatorStr = $(e.target).text();
     }
     else if(typeof e === 'string') {
-      console.log('string'+ e);
+      // console.log('string'+ e);
       operatorStr = e;
     }
 
@@ -174,12 +174,17 @@ OD.Calc = (function(){
       state.input = state.input.slice(0, -1);
     }
 
-    state.current = (state.current === '') ? state.input : state.current;
+    // state.current = (state.current === '') ? state.input : state.current;
 
-    if(state.phase === 1) {
-      this.calc().renderResult(state.current);
-      state.input = '';
+    //state.current にまだ値がない場合は履歴に追加しない
+    if (state.current === '') {
+      state.current = state.input;
     }
+    else if (state.phase === 1) {
+      this.calc().addMemory(state.current).renderResult(state.current);
+    }
+
+    console.log('operator｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
 
     switch(operatorStr) {
       case '+':
@@ -212,9 +217,9 @@ OD.Calc = (function(){
         break;
     }
 
-    this.renderSubView(operatorStr);
-
+    state.input = '';
     state.phase = 0;
+    this.renderSubView(operatorStr);
   };
 
   /**
@@ -224,8 +229,15 @@ OD.Calc = (function(){
   Calc.equal = function() {
     if(state.phase === 1) {
       console.log('equal｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
-      state.current = (state.current === '') ? state.input : state.current;
-      this.calc().renderSubView().renderResult(state.current);
+
+      //state.current にまだ値がない場合は履歴に追加しない
+      if (state.current === '') {
+        state.current = state.input;
+      }
+      else {
+        this.calc().addMemory(state.current).renderSubView().renderResult(state.current);
+      }
+
       state.input = '';
       state.phase = 2;
     }
@@ -233,14 +245,13 @@ OD.Calc = (function(){
   };
 
   /**
-   * 一文字削除する
+   * 一つ前の結果に戻る
    */
-  Calc.backSpace = function() {
-
-    //TODO 消しても renderResult で追加されるため機能していない
+  Calc.clearEntry = function() {
     state.longMemory.pop();
     state.input = state.longMemory[state.longMemory.length - 1] || '0';
-    return this.renderResult(state.input, 'bs');
+    $('#memory').text(state.longMemory);
+    return this.renderResult(state.input);
   };
 
   /**
@@ -252,7 +263,7 @@ OD.Calc = (function(){
     };
     state.current = '';
     state.input = '';
-    this.renderSubView().renderResult('0');
+    this.renderSubView().addMemory('0').renderResult('0');
   };
 
   /**
@@ -263,7 +274,7 @@ OD.Calc = (function(){
 
     //立て続けの0は履歴に入れない
     if (result === '0' && state.longMemory[state.longMemory.length - 1] === '0') {
-      return;
+      return this;
     }
 
     state.shortMemory.push(result);
@@ -277,6 +288,7 @@ OD.Calc = (function(){
    */
   Calc.renderSubView = function(opt_operatorStr) {
     var subText = opt_operatorStr || '';
+    // console.log('renderSubView' + subText);
     $elm.subView.text(subText);
     return this;
   };
@@ -287,7 +299,6 @@ OD.Calc = (function(){
    */
   Calc.renderResult = function(result) {
     // console.log(typeof result);
-    this.addMemory(result);
     $elm.mainView.text(result);
     console.log('renderResult｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
     return this;
@@ -296,9 +307,10 @@ OD.Calc = (function(){
   return Calc;
 
   //TODO
-  // ・CE対応
-  // ・BS対応
+  // ・00対応
   // ・履歴対応
+  // ・%対応
+  // ・+/-対応
   // ・モデルとビューコントロールに分離する？
   // キータイプ時にボタンを押したような表現を加える
 
