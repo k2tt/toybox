@@ -117,8 +117,8 @@ OD.Calc = (function(){
       num += e;
     }
 
-    //0の後に数字が続く場合は、先頭の0を消す
-    state.input = num.replace(/^0([0-9])/,'$1');
+    //0の後に数字が続く場合は、数字の前の0を消す
+    state.input = num.replace(/^0+([0-9])/,'$1');
     state.phase = 1;
     this.addMemory(state.input).renderResult(state.input);
   };
@@ -307,7 +307,6 @@ OD.Calc = (function(){
   return Calc;
 
   //TODO
-  // ・00対応
   // ・履歴対応
   // ・%対応
   // ・+/-対応
