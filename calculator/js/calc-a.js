@@ -44,8 +44,9 @@ OD.Calc = (function(){
       ce : $('#ce'),
       equal : $('#equal'),
       num : $('.num'),
-      point : $('.point'),
-      operator : $('.operator')
+      point : $('#point'),
+      operator : $('.operator'),
+      signInversion : $('#signInversion')
     };
 
     /**
@@ -75,17 +76,23 @@ OD.Calc = (function(){
       _this.equal();
     });
 
+    $elm.signInversion.on('click', function() {
+      _this.signInversion();
+    });
+
     Mousetrap.bind(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], function(e, key) {
       _this.inputNum(key);
     }).bind('.', function() {
       _this.inputPoint();
     }).bind(['+', '-', '*', '/'], function(e, key) {
       _this.operator(key);
-    }).bind(['=','return'], function(e) {
+    }).bind(['=', 'return', 'enter'], function(e) {
       e.preventDefault();
       _this.equal();
     }).bind('c', function() {
       _this.allClear();
+    }).bind(['del', 'backspace'], function() {
+      _this.clearEntry();
     });
 
   };
@@ -223,6 +230,25 @@ OD.Calc = (function(){
   };
 
   /**
+   * 符号反転
+   * return {object} this
+   */
+  Calc.signInversion = function() {
+    if (state.phase === 0 || state.phase === 2) {
+      if (state.current === '') {
+        return;
+      }
+      state.current = -state.current + '';
+      this.addMemory(state.current).renderResult(state.current);
+    }
+    else if (state.phase === 1) {
+      state.input = -state.input + "";
+      this.addMemory(state.input).renderResult(state.input);
+    }
+    return this;
+  };
+
+  /**
    * イコール
    * return {object} this
    */
@@ -307,9 +333,9 @@ OD.Calc = (function(){
   return Calc;
 
   //TODO
+  // ・カンマ区切り対応
   // ・履歴対応
   // ・%対応
-  // ・+/-対応
   // ・モデルとビューコントロールに分離する？
   // キータイプ時にボタンを押したような表現を加える
 
