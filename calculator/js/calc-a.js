@@ -320,12 +320,22 @@ OD.Calc = (function(){
   };
 
   /**
+   * 数字のカンマ区切り
+   * @param  {String} num
+   * @return {String}
+   */
+  Calc.separate = function(num){
+    return String(num).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+  };
+
+  /**
    * 結果を更新する
    * @param {String}
    */
   Calc.renderResult = function(result) {
     // console.log(typeof result);
-    $elm.mainView.text(result);
+    var separateResult = this.separate(result);
+    $elm.mainView.text(separateResult);
     console.log('renderResult｜input='+state.input+'｜current='+state.current+'｜phase='+state.phase);
     return this;
   };
@@ -333,7 +343,6 @@ OD.Calc = (function(){
   return Calc;
 
   //TODO
-  // ・カンマ区切り対応
   // ・履歴対応
   // ・%対応
   // ・モデルとビューコントロールに分離する？
