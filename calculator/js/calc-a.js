@@ -264,6 +264,7 @@ OD.Calc = (function(){
         this.calc().addMemory(state.current).renderSubView().renderResult(state.current);
       }
 
+      state.shortMemory = [];
       state.input = '';
       state.phase = 2;
     }
@@ -274,9 +275,9 @@ OD.Calc = (function(){
    * 一つ前の結果に戻る
    */
   Calc.clearEntry = function() {
-    state.longMemory.pop();
-    state.input = state.longMemory[state.longMemory.length - 1] || '0';
-    $('#memory').text(state.longMemory);
+    state.shortMemory.pop();
+    state.input = state.shortMemory[state.shortMemory.length - 1] || '0';
+    $('#memory').text(state.shortMemory);
     return this.renderResult(state.input);
   };
 
@@ -289,6 +290,7 @@ OD.Calc = (function(){
     };
     state.current = '';
     state.input = '';
+    state.shortMemory = [];
     this.renderSubView().addMemory('0').renderResult('0');
   };
 
@@ -299,13 +301,13 @@ OD.Calc = (function(){
   Calc.addMemory = function(result) {
 
     //立て続けの0は履歴に入れない
-    if (result === '0' && state.longMemory[state.longMemory.length - 1] === '0') {
+    if (result === '0' && state.shortMemory[state.shortMemory.length - 1] === '0') {
       return this;
     }
 
     state.shortMemory.push(result);
     state.longMemory.push(result);
-    $('#memory').text(state.longMemory); //test
+    $('#memory').text(state.shortMemory); //test
     return this;
   };
 
@@ -343,10 +345,10 @@ OD.Calc = (function(){
   return Calc;
 
   //TODO
-  // ・履歴対応
+  // ・長履歴をどこかに表示させる？
+  // ・CE時にオペレーターも消す？
   // ・%対応
   // ・モデルとビューコントロールに分離する？
-  // キータイプ時にボタンを押したような表現を加える
 
 })();
 
